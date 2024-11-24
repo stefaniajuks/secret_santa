@@ -22,39 +22,21 @@
             align-items: center;
             justify-content: center;
             padding: 20px;
+            background-color: #23221D;
+            color: #FFD700;
         }
 
-        /* Background image with fade overlay */
-        body::before {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image: url('https://images.pexels.com/photos/6260391/pexels-photo-6260391.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260');
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
-            filter: brightness(0.5);
-            z-index: -1;
-        }
-
-        /* Title */
+        /* Fixed Title */
         h1 {
             font-family: 'Nickainley', cursive;
             font-size: 2.5rem;
             color: #FFFFFF;
-            margin-bottom: 30px;
             text-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
+            margin-bottom: 30px;
         }
 
         /* Message Section */
         .text-container {
-            background-color: rgba(56, 28, 16, 0.8);
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
             text-align: center;
             margin-bottom: 30px;
         }
@@ -113,12 +95,12 @@
         #participantsSection {
             display: none;
             text-align: center;
-            color: #FFFFFF;
             margin-top: 20px;
         }
         .participants-list {
             margin-top: 10px;
             font-size: 1rem;
+            color: #FFFFFF;
         }
     </style>
     <!-- Firebase CDN -->
@@ -154,15 +136,15 @@
     </div>
 
     <script>
-        // Your Firebase configuration (replace with your Firebase project's config)
         const firebaseConfig = {
-            apiKey: "YOUR_API_KEY",
-            authDomain: "YOUR_AUTH_DOMAIN",
-            databaseURL: "YOUR_DATABASE_URL",
-            projectId: "YOUR_PROJECT_ID",
-            storageBucket: "YOUR_STORAGE_BUCKET",
-            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-            appId: "YOUR_APP_ID"
+        apiKey: "AIzaSyCmR_IQxauE4EGHZkpsq_ngjpqHxl3ZGl4",
+        authDomain: "secret-santa-24.firebaseapp.com",
+        databaseURL: "https://secret-santa-24-default-rtdb.firebaseio.com",
+        projectId: "secret-santa-24",
+        storageBucket: "secret-santa-24.firebasestorage.app",
+        messagingSenderId: "42947900753",
+        appId: "1:42947900753:web:db70916c34c2a6916d0f70",
+        measurementId: "G-XLB9R82FFD"
         };
 
         // Initialize Firebase
