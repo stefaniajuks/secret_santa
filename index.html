@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EP-DT-FS Gas Group Secret Santa</title>
+    <!-- Include Firebase Libraries (Version 8 for browser setup) -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <style>
         /* General Reset */
         * {
@@ -15,37 +18,35 @@
         /* Body Styling */
         body {
             font-family: 'Georgia', serif;
-            position: relative;
-            min-height: 100vh;
+            background-image: url('https://images.pexels.com/photos/6260391/pexels-photo-6260391.jpeg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            color: #FFD700;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
+            height: 100vh;
             padding: 20px;
-            background-color: #23221D;
-            color: #FFD700;
+            text-align: center;
         }
 
-        /* Fixed Title */
+        /* Title */
         h1 {
             font-family: 'Nickainley', cursive;
-            font-size: 2.5rem;
+            font-size: 3rem;
             color: #FFFFFF;
-            text-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
-            margin-bottom: 30px;
+            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7);
+            margin-bottom: 20px;
         }
 
-        /* Message Section */
-        .text-container {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
+        /* Message Styling */
         p {
             font-family: 'Cocoa', sans-serif;
             font-size: 1.5rem;
             color: #FFFFFF;
-            margin-bottom: 0;
+            margin-bottom: 30px;
         }
 
         /* Buttons */
@@ -59,27 +60,24 @@
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            transition: background-color 0.3s;
-            margin-bottom: 20px;
-        }
-        button:hover {
-            background-color: #600000;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            transition: background-color 0.3s, transform 0.2s;
         }
 
-        /* Form */
+        button:hover {
+            background-color: #600000;
+            transform: scale(1.05);
+        }
+
+        /* Form Styling */
         #registrationForm {
-            display: none; /* Initially hidden */
-            text-align: center;
+            display: none;
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
         }
-        .form-group {
-            margin: 15px 0;
-        }
-        label {
-            display: block;
-            margin-bottom: 5px;
-            font-size: 1.1rem;
-            color: #FFFFFF;
-        }
+
         input {
             width: 100%;
             max-width: 300px;
@@ -87,119 +85,107 @@
             border: 2px solid #FFD700;
             border-radius: 5px;
             font-size: 1rem;
-            margin: 0 auto;
-            display: block;
+            margin-bottom: 10px;
         }
 
         /* Participants Section */
         #participantsSection {
-            display: none; /* Initially hidden */
-            text-align: center;
             margin-top: 20px;
-        }
-        .participants-list {
-            margin-top: 10px;
-            font-size: 1rem;
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 20px;
+            border-radius: 10px;
             color: #FFFFFF;
         }
+
+        .participants-list p {
+            font-size: 1rem;
+            color: #FFFFFF;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7);
+        }
     </style>
-    <!-- Firebase CDN -->
-    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js"></script>
 </head>
 <body>
-    <!-- Fixed Title -->
+    <!-- Title -->
     <h1>EP-DT-FS Gas Group Secret Santa</h1>
+    <p>Join our Secret Santa fun and make someone's Christmas magical!</p>
 
-    <!-- Message Section -->
-    <div class="text-container">
-        <p>Join our Secret Santa fun and make someone's Christmas magical!</p>
-    </div>
-
+    <!-- Join Button -->
     <button id="registerButton">Join</button>
 
     <!-- Registration Form -->
     <div id="registrationForm">
-        <div class="form-group">
-            <label for="name">Enter Your Name:</label>
-            <input type="text" id="name" placeholder="Your Name" required>
-        </div>
+        <input type="text" id="name" placeholder="Enter your name">
         <button id="submitButton">Submit</button>
     </div>
 
     <!-- Participants List -->
-    <div id="participantsSection">
+    <div id="participantsSection" style="display: none;">
         <h2>Participants</h2>
-        <div class="participants-list" id="participantsList">
-            <!-- Participants will appear here -->
-        </div>
+        <div class="participants-list" id="participantsList"></div>
     </div>
 
+    <!-- Firebase Configuration and Initialization -->
     <script>
-        // Import the functions you need from the SDKs you need
-        import { initializeApp } from "firebase/app";
-        import { getAnalytics } from "firebase/analytics";
-        // TODO: Add SDKs for Firebase products that you want to use
-        // https://firebase.google.com/docs/web/setup#available-libraries
-        
-        // Your web app's Firebase configuration
-        // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-        const firebaseConfig = {
-          apiKey: "AIzaSyCmR_IQxauE4EGHZkpsq_ngjpqHxl3ZGl4",
-          authDomain: "secret-santa-24.firebaseapp.com",
-          databaseURL: "https://secret-santa-24-default-rtdb.firebaseio.com",
-          projectId: "secret-santa-24",
-          storageBucket: "secret-santa-24.firebasestorage.app",
-          messagingSenderId: "42947900753",
-          appId: "1:42947900753:web:db70916c34c2a6916d0f70",
-          measurementId: "G-XLB9R82FFD"
-        };
-        
         // Initialize Firebase
-        const app = initializeApp(firebaseConfig);
-        const analytics = getAnalytics(app);
-        // Initialize Firebase
-        const app = firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
+        firebase.initializeApp({
+            apiKey: "AIzaSyCmR_IQxauE4EGHZkpsq_ngjpqHxl3ZGl4",
+            authDomain: "secret-santa-24.firebaseapp.com",
+            databaseURL: "https://secret-santa-24-default-rtdb.firebaseio.com",
+            projectId: "secret-santa-24",
+            storageBucket: "secret-santa-24.firebasestorage.app",
+            messagingSenderId: "42947900753",
+            appId: "1:42947900753:web:db70916c34c2a6916d0f70",
+            measurementId: "G-XLB9R82FFD"
+        });
 
+        const db = firebase.database();
+        console.log('Firebase initialized successfully!');
+    </script>
+
+    <!-- Event Listener Script -->
+    <script>
         const registerButton = document.getElementById('registerButton');
         const registrationForm = document.getElementById('registrationForm');
-        const participantsSection = document.getElementById('participantsSection');
         const submitButton = document.getElementById('submitButton');
+        const participantsSection = document.getElementById('participantsSection');
         const participantsList = document.getElementById('participantsList');
         const nameInput = document.getElementById('name');
 
-        // Show Registration Form and Hide Join Button
+        // Join button functionality
         registerButton.addEventListener('click', () => {
-            registrationForm.style.display = 'block'; // Show the form
-            registerButton.style.display = 'none'; // Hide the Join button
+            console.log('Join button clicked!');
+            registrationForm.style.display = 'block';
+            registerButton.style.display = 'none';
         });
 
-        // Submit Form and Add Participant
+        // Submit button functionality
         submitButton.addEventListener('click', () => {
             const name = nameInput.value.trim();
+            console.log('Submit button clicked! Name entered:', name);
+
             if (!name) {
-                alert("Please enter your name.");
+                alert('Please enter your name.');
                 return;
             }
 
-            // Add participant to Firebase database
-            db.ref('participants').push(name);
-
-            // Clear input and hide form
-            nameInput.value = '';
-            registrationForm.style.display = 'none';
-            participantsSection.style.display = 'block';
+            db.ref('participants').push(name)
+                .then(() => {
+                    console.log('Name added successfully!');
+                    nameInput.value = '';
+                    participantsSection.style.display = 'block';
+                })
+                .catch(error => console.error('Firebase write error:', error.message));
         });
 
-        // Listen for updates to the participants list
+        // Real-time updates for participants list
         db.ref('participants').on('value', (snapshot) => {
-            participantsList.innerHTML = ''; // Clear the list before updating
+            console.log('Participants list updated!');
+            participantsList.innerHTML = ''; // Clear list
             snapshot.forEach((childSnapshot) => {
                 const participant = childSnapshot.val();
-                const participantElement = document.createElement('p');
-                participantElement.textContent = participant;
-                participantsList.appendChild(participantElement);
+                const p = document.createElement('p');
+                p.textContent = participant;
+                participantsList.appendChild(p);
             });
         });
     </script>
