@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -70,7 +68,7 @@
 
         /* Form */
         #registrationForm {
-            display: none;
+            display: none; /* Initially hidden */
             text-align: center;
         }
         .form-group {
@@ -86,7 +84,7 @@
             width: 100%;
             max-width: 300px;
             padding: 10px;
-            border: 2px solid #FFFFFF;
+            border: 2px solid #FFD700;
             border-radius: 5px;
             font-size: 1rem;
             margin: 0 auto;
@@ -95,7 +93,7 @@
 
         /* Participants Section */
         #participantsSection {
-            display: none;
+            display: none; /* Initially hidden */
             text-align: center;
             margin-top: 20px;
         }
@@ -163,14 +161,14 @@
 
         // Show Registration Form and Hide Join Button
         registerButton.addEventListener('click', () => {
-            registrationForm.style.display = 'block';
-            registerButton.style.display = 'none';
+            registrationForm.style.display = 'block'; // Show the form
+            registerButton.style.display = 'none'; // Hide the Join button
         });
 
         // Submit Form and Add Participant
         submitButton.addEventListener('click', () => {
             const name = nameInput.value.trim();
-            if (name === "") {
+            if (!name) {
                 alert("Please enter your name.");
                 return;
             }
@@ -179,7 +177,7 @@
             db.ref('participants').push(name);
 
             // Clear input and hide form
-            nameInput.value = "";
+            nameInput.value = '';
             registrationForm.style.display = 'none';
             participantsSection.style.display = 'block';
         });
