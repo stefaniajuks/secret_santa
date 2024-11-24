@@ -4,190 +4,101 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EP-DT-FS Gas Group Secret Santa</title>
-    <!-- Include Firebase Libraries (Version 8 for browser setup) -->
+    <!-- Firebase Libraries -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <style>
-        /* General Reset */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        /* Body Styling */
-        body {
-            font-family: 'Georgia', serif;
-            background-image: url('https://images.pexels.com/photos/6260391/pexels-photo-6260391.jpeg');
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            color: #FFD700;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            padding: 20px;
-            text-align: center;
-        }
-
-        /* Title */
-        h1 {
-            font-family: 'Nickainley', cursive;
-            font-size: 3rem;
-            color: #FFFFFF;
-            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7);
-            margin-bottom: 20px;
-        }
-
-        /* Message Styling */
-        p {
-            font-family: 'Cocoa', sans-serif;
-            font-size: 1.5rem;
-            color: #FFFFFF;
-            margin-bottom: 30px;
-        }
-
-        /* Buttons */
-        button {
-            background-color: #8B0000;
-            color: #FFFFFF;
-            font-family: 'Cocoa', sans-serif;
-            font-weight: bold;
-            font-size: 1.2rem;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-            transition: background-color 0.3s, transform 0.2s;
-        }
-
-        button:hover {
-            background-color: #600000;
-            transform: scale(1.05);
-        }
-
-        /* Form Styling */
-        #registrationForm {
-            display: none;
-            background-color: rgba(0, 0, 0, 0.5);
-            padding: 20px;
-            border-radius: 10px;
-            margin-top: 20px;
-        }
-
-        input {
-            width: 100%;
-            max-width: 300px;
-            padding: 10px;
-            border: 2px solid #FFD700;
-            border-radius: 5px;
-            font-size: 1rem;
-            margin-bottom: 10px;
-        }
-
-        /* Participants Section */
-        #participantsSection {
-            margin-top: 20px;
-            background-color: rgba(0, 0, 0, 0.5);
-            padding: 20px;
-            border-radius: 10px;
-            color: #FFFFFF;
-        }
-
-        .participants-list p {
-            font-size: 1rem;
-            color: #FFFFFF;
-            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7);
-        }
+        /* General styling omitted for brevity */
+        body { text-align: center; font-family: 'Arial', sans-serif; }
+        .hidden { display: none; }
+        button { margin: 10px; padding: 10px; }
     </style>
 </head>
 <body>
-    <!-- Title -->
     <h1>EP-DT-FS Gas Group Secret Santa</h1>
-    <p>Join our Secret Santa fun and make someone's Christmas magical!</p>
-
-    <!-- Join Button -->
-    <button id="registerButton">Join</button>
-
-    <!-- Registration Form -->
-    <div id="registrationForm">
-        <input type="text" id="name" placeholder="Enter your name">
-        <button id="submitButton">Submit</button>
+    <div id="joinSection">
+        <h2>Join the Fun!</h2>
+        <input type="text" id="nameInput" placeholder="Enter your name">
+        <button id="joinButton">Join</button>
+    </div>
+    <div id="assignmentSection" class="hidden">
+        <h2>Check Your Assignment</h2>
+        <input type="text" id="loginName" placeholder="Enter your name">
+        <button id="loginButton">Log In</button>
+    </div>
+    <div id="resultSection" class="hidden">
+        <h2>Your Assignment</h2>
+        <p id="assignmentResult"></p>
+        <h3>Rules:</h3>
+        <p>Budget: 15 euros/francs</p>
+        <p>Most important: Don't be a Grinch!</p>
     </div>
 
-    <!-- Participants List -->
-    <div id="participantsSection" style="display: none;">
-        <h2>Participants</h2>
-        <div class="participants-list" id="participantsList"></div>
-    </div>
-
-    <!-- Firebase Configuration and Initialization -->
     <script>
-        // Initialize Firebase
+        // Firebase configuration
         firebase.initializeApp({
-            apiKey: "AIzaSyCmR_IQxauE4EGHZkpsq_ngjpqHxl3ZGl4",
-            authDomain: "secret-santa-24.firebaseapp.com",
-            databaseURL: "https://secret-santa-24-default-rtdb.firebaseio.com",
-            projectId: "secret-santa-24",
-            storageBucket: "secret-santa-24.firebasestorage.app",
-            messagingSenderId: "42947900753",
-            appId: "1:42947900753:web:db70916c34c2a6916d0f70",
-            measurementId: "G-XLB9R82FFD"
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+            databaseURL: "https://YOUR_PROJECT_ID.firebaseio.com",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_PROJECT_ID.appspot.com",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID"
         });
-
         const db = firebase.database();
-        console.log('Firebase initialized successfully!');
-    </script>
 
-    <!-- Event Listener Script -->
-    <script>
-        const registerButton = document.getElementById('registerButton');
-        const registrationForm = document.getElementById('registrationForm');
-        const submitButton = document.getElementById('submitButton');
-        const participantsSection = document.getElementById('participantsSection');
-        const participantsList = document.getElementById('participantsList');
-        const nameInput = document.getElementById('name');
-
-        // Join button functionality
-        registerButton.addEventListener('click', () => {
-            console.log('Join button clicked!');
-            registrationForm.style.display = 'block';
-            registerButton.style.display = 'none';
-        });
-
-        // Submit button functionality
-        submitButton.addEventListener('click', () => {
+        // Join functionality
+        const joinButton = document.getElementById('joinButton');
+        const nameInput = document.getElementById('nameInput');
+        joinButton.addEventListener('click', () => {
             const name = nameInput.value.trim();
-            console.log('Submit button clicked! Name entered:', name);
-
             if (!name) {
                 alert('Please enter your name.');
                 return;
             }
-
             db.ref('participants').push(name)
-                .then(() => {
-                    console.log('Name added successfully!');
-                    nameInput.value = '';
-                    participantsSection.style.display = 'block';
-                })
-                .catch(error => console.error('Firebase write error:', error.message));
+                .then(() => alert('You have joined successfully!'))
+                .catch(error => console.error(error));
         });
 
-        // Real-time updates for participants list
-        db.ref('participants').on('value', (snapshot) => {
-            console.log('Participants list updated!');
-            participantsList.innerHTML = ''; // Clear list
-            snapshot.forEach((childSnapshot) => {
-                const participant = childSnapshot.val();
-                const p = document.createElement('p');
-                p.textContent = participant;
-                participantsList.appendChild(p);
-            });
+        // Assignment functionality
+        const loginButton = document.getElementById('loginButton');
+        const loginName = document.getElementById('loginName');
+        const assignmentResult = document.getElementById('assignmentResult');
+        loginButton.addEventListener('click', () => {
+            const name = loginName.value.trim();
+            if (!name) {
+                alert('Please enter your name.');
+                return;
+            }
+            db.ref(assignments/${name}).once('value')
+                .then(snapshot => {
+                    const recipient = snapshot.val();
+                    if (recipient) {
+                        assignmentResult.textContent = You have been assigned to buy a gift for: ${recipient};
+                        document.getElementById('resultSection').classList.remove('hidden');
+                    } else {
+                        alert('Name not found in assignments. Please make sure you joined!');
+                    }
+                })
+                .catch(error => console.error(error));
         });
+
+        // Admin-only: Random Assignment (run manually from the browser console)
+        function assignParticipants() {
+            db.ref('participants').once('value')
+                .then(snapshot => {
+                    const participants = Object.values(snapshot.val());
+                    const shuffled = participants.sort(() => 0.5 - Math.random());
+                    const assignments = {};
+                    shuffled.forEach((name, index) => {
+                        assignments[name] = shuffled[(index + 1) % shuffled.length];
+                    });
+                    return db.ref('assignments').set(assignments);
+                })
+                .then(() => alert('Assignments have been made successfully!'))
+                .catch(error => console.error(error));
+        }
     </script>
 </body>
 </html>
